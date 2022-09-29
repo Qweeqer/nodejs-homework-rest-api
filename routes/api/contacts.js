@@ -36,7 +36,7 @@ router.get("/:contactId", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     const { error } = joiPostSchema.validate(req.body);
-    if (error) throw createError(404);
+    if (error) throw createError(400, error.message);
     const contact = await addContact(req.body);
     res.status(201).json(contact);
   } catch (error) {
