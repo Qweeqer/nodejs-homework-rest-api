@@ -1,25 +1,71 @@
-const express = require('express')
+const express = require("express");
 
-const router = express.Router()
+const {
+  getlistContacts,
+  getContactById,
+  addContact,
+  removeContact,
+  updateContact,
+} = require("../../models/contacts");
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const { createError } = require("../../helpers");
+const { joiPostSchema, joiPutSchema } = require("./schemas");
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const router = express.Router();
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/", async (req, res, next) => {
+  try {
+    const contacts = await getlistContacts();
+    res.json(contacts);
+  } catch (error) {
+    next(error);
+  }
+});
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/:contactId", async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const contact = await getContactById(contactId);
+    if (!contact) throw createError(404);
+    res.json(contact);
+  } catch (error) {
+    next(error);
+  }
+});
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post("/", async (req, res, next) => {
+  try {
+    const { error } = joiPostSchema.validate(req.body);
+    if (error) throw createError(404);
+    const contact = await addContact(req.body);
+    res.status(201).json(contact);
+  } catch (error) {
+    next(error);
+  }
+});
 
-module.exports = router
+router.delete("/:contactId", async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const contact = await removeContact(contactId);
+    if (!contact) throw createError(404);
+    res.json({ message: "Contact deleted!" });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/:contactId", async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const { error } = joiPutSchema.validate(req.body);
+    if (error) throw createError(400, error.message);
+    const contact = await updateContact(contactId, req.body);
+    if (!contact) throw createError(404);
+    res.json(contact);
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = router;
