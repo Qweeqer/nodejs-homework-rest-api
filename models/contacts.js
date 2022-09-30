@@ -40,7 +40,7 @@ async function removeContact(contactId) {
     const index = contacts.findIndex((contact) => contact.id === contactId);
     if (index === -1) return null;
     const [result] = contacts.splice(index, 1);
-    write(contacts);
+    await write(contacts);
     return result;
   } catch {
     console.log(Error.INVALID_ID);
@@ -52,7 +52,7 @@ async function addContact(body) {
     const contacts = await getlistContacts();
     const newContact = { id: nanoid(), ...body };
     contacts.push(newContact);
-    write(contacts);
+    await write(contacts);
     return newContact;
   } catch {
     console.log(Error.INVALID_ID);
@@ -64,9 +64,9 @@ async function updateContact(contactId, body) {
     const index = contacts.findIndex((contact) => contact.id === contactId);
     if (index === -1) return null;
     const updatedContact = { ...contacts[index], ...body };
-    const [result] = contacts.splice(index, 1, updatedContact).at(0);
-    write(contacts);
-    return result;
+    contacts.splice(index, 1, updatedContact);
+    await write(contacts);
+    return updatedContact;
   } catch {
     console.log(Error.INVALID_ID);
   }

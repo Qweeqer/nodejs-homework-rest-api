@@ -49,7 +49,7 @@ router.delete("/:contactId", async (req, res, next) => {
     const { contactId } = req.params;
     const contact = await removeContact(contactId);
     if (!contact) throw createError(404);
-    res.json({ message: "Contact deleted!" });
+    res.status(200).json({ message: "Contact deleted!" });
   } catch (error) {
     next(error);
   }
@@ -61,8 +61,9 @@ router.put("/:contactId", async (req, res, next) => {
     const { error } = joiPutSchema.validate(req.body);
     if (error) throw createError(400, error.message);
     const contact = await updateContact(contactId, req.body);
+    console.log(contactId);
     if (!contact) throw createError(404);
-    res.json(contact);
+    res.status(200).json(contact);
   } catch (error) {
     next(error);
   }
