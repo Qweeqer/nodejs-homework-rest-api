@@ -1,72 +1,26 @@
 const express = require("express");
 
 const {
-  getlistContacts,
+  getAllContacts,
   getContactById,
   addContact,
-  removeContact,
+  deleteContact,
   updateContact,
-} = require("../../models/contacts");
-
-const { createError } = require("../../helpers");
-const { joiPostSchema, joiPutSchema } = require("./schemas");
+  updateStatusContact,
+} = require("../../controllers");
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
-  try {
-    const contacts = await getlistContacts();
-    res.json(contacts);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/", getAllContacts);
 
-router.get("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const contact = await getContactById(contactId);
-    if (!contact) throw createError(404);
-    res.json(contact);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/:id", getContactById);
 
-router.post("/", async (req, res, next) => {
-  try {
-    const { error } = joiPostSchema.validate(req.body);
-    if (error) throw createError(400, error.message);
-    const contact = await addContact(req.body);
-    res.status(201).json(contact);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post("/", addContact);
 
-router.delete("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const contact = await removeContact(contactId);
-    if (!contact) throw createError(404);
-    res.status(200).json({ message: "Contact deleted!" });
-  } catch (error) {
-    next(error);
-  }
-});
+router.delete("/:id", deleteContact);
 
-router.put("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const { error } = joiPutSchema.validate(req.body);
-    if (error) throw createError(400, error.message);
-    const contact = await updateContact(contactId, req.body);
-    console.log(contactId);
-    if (!contact) throw createError(404);
-    res.status(200).json(contact);
-  } catch (error) {
-    next(error);
-  }
-});
+router.put("/:id", updateContact);
+
+router.patch("/:id/favorite", updateStatusContact);
 
 module.exports = router;
