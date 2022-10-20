@@ -7,25 +7,25 @@ const avatarsDir = path.join(__dirname, "../../", "public", "avatars");
 
 const updateAvatar = async (req, res) => {
   const { path: tempUpload, originalname } = req.file;
-  const { _id: id } = req.user;
-  const imageName = `${id}_${originalname}`;
   try {
+    const { _id: id } = req.user;
+    const imageName = `${id}_${originalname}`;
     const resultUpload = path.join(avatarsDir, imageName);
     await fs.rename(tempUpload, resultUpload);
     await Jimp.read(resultUpload)
-      .then((avatar) => {
-        return avatar.resize(250, 250).write(resultUpload);
+      .then(async (avatar) => {
+        return await avatar.resize(250, 250).write(resultUpload);
       })
       .catch((err) => {
         console.error(err);
       });
-    const avatarURL = path.join("public", "avatars", imageName);
+    const avatarURL = path.join("avatars", imageName);
     await User.findByIdAndUpdate(id, { avatarURL });
     res.json({
       avatarURL,
     });
   } catch (error) {
-    await fs.unlink(tempUpload);
+    await fs.unlinkSync(tempUpload);
     throw error;
   }
 };
