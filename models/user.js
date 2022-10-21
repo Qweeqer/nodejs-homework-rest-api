@@ -26,6 +26,10 @@ const userSchema = Schema(
       type: String,
       default: "",
     },
+    avatarURL: {
+      type: String,
+      required: [true, "Avatar is required"],
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -38,6 +42,7 @@ const joiUserSchema = Joi.object({
   password: Joi.string().min(6).required(),
   subscription: Joi.string(),
   token: Joi.string(),
+  avatarURL: Joi.string(),
 });
 
 const joiLoginSchema = Joi.object({

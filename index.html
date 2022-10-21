@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <form id="contact-add-form" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="Contact name" required />
+      <input type="text" name="email" placeholder="Contact email" required />
+    <input type="text" name="phone" placeholder="Contact phone" required />
+    <input type="radio" id="favoriteTrue" name="favorite" value="true" placeholder="Contact favorite" required />
+    <label for="favoriteTrue">True</label>
+    <input type="radio" id="favoriteFalse" name="favorite" value="false" placeholder="Contact favorite" required />
+    <label for="favoriteFalse">False</label>
+      <input type="file" name="cover" multiple required />
+      <button type="submit">Add contact</button>
+    </form>
+
+    <script>
+      const contactAddForm = document.getElementById("contact-add-form");
+      contactAddForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const { name, email, phone, favorite, cover } = this.elements;
+        const data = new FormData();
+        data.append("name", name.value);
+        data.append("email", email.value);
+        data.append("phone", phone.value);
+          data.append("favorite", favorite.value);
+        data.append("cover", cover.files[0]);
+      });
+    </script>
+  </body>
+</html>
